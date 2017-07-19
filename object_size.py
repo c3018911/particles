@@ -1,3 +1,5 @@
+# see http://www.pyimagesearch.com/2016/03/28/measuring-size-of-objects-in-an-image-with-opencv/
+
 # USAGE
 # python object_size.py --image images/example_01.png --width 0.955
 # python object_size.py --image images/example_02.png --width 0.955
@@ -40,12 +42,7 @@ def auto_canny(image, sigma=0.33):
     # return the edged image
     return edged
 
-def inverte(imagem):
-    imagem = (255-imagem)
-    #cv2.imwrite(name, imagem)
-    return imagem
 # construct the argument parse and parse the arguments
-    
 ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--image", required=True,
     help="path to the input image")
@@ -77,7 +74,7 @@ opening = cv2.morphologyEx(thresh,cv2.MORPH_OPEN,kernel, iterations = 2)
 sure_bg = cv2.dilate(opening,kernel,iterations=3)
 
 # Finding sure foreground area
-dist_transform = cv2.distanceTransform(opening,cv2.cv.CV_DIST_L2,5)
+dist_transform = cv2.distanceTransform(opening,cv2.DIST_L2,5)
 '''
 cv2.namedWindow('dist_transform',cv2.WINDOW_NORMAL)
 cv2.resizeWindow('dist_transform', 900,900)
@@ -250,7 +247,7 @@ for c in cnts:
         diaB.append(dimB)
         Area.append(dimA*dimB)
     n+=1
-
+    print n
     
     # draw the object sizes on the image
     cv2.putText(image, "A={:.3f}in".format(dimA),
@@ -271,6 +268,7 @@ for c in cnts:
     cv2.circle(image,center,radius,(0,255,0),2)
 
 #===========================Max inscribed circle================================
+    
     dist2=np.zeros((height,width))
     #http://answers.opencv.org/question/1494/pointpolygontest-is-not-working-properly/
     for ind_y in range(image.shape[0]):
@@ -281,7 +279,7 @@ for c in cnts:
                 dist2[ind_y,ind_x] = cv2.pointPolygonTest(c,(ind_y,ind_x),True)
             else:
                 dist2[ind_y,ind_x]=-10e7 #set large dummay value
-    '''
+    
     cur_img=orig.copy()
     cv2.drawContours(cur_img, [box.astype("int")], -1, (0, 255, 0), 2)
     cv2.drawContours(cur_img, c, -1, (0, 255, 0), 4)
@@ -289,13 +287,14 @@ for c in cnts:
     cv2.resizeWindow('cur_img', 900,900)
     cv2.imshow("cur_img", cur_img)
     cv2.waitKey(0)
-    '''
+    
     minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(dist2)
     #print maxLoc, minVal, maxVal
     cv2.circle(image,(maxLoc[1],maxLoc[0]),int(abs((maxVal))),(0,255,255),2)
     cv2.putText(image, str(int(maxVal)),
         (maxLoc[1],maxLoc[0]), cv2.FONT_HERSHEY_SIMPLEX,
         1, (0, 255, 0), 3)
+    
 #========================== Particle characteristics ===========================
 
     roughness= cv2.arcLength(c,True)/cv2.arcLength(hull,True)
@@ -330,14 +329,15 @@ cumulativeArea=cumulativeArea/float(max(cumulativeArea))
 baseArea*=25.4**2
 
 
-   
+plt.imshow(image)
+plt.show()
+'''
 cv2.namedWindow('Image',cv2.WINDOW_NORMAL)
 cv2.resizeWindow('Image', 900,900)
 cv2.imshow("Image", image)
 cv2.waitKey(0)
-
+'''
 cv2.imwrite('Contour.jpg',image)
-cv2.destroyWindow("Image")
 '''
 #smallest circle
 cv2.namedWindow('Image',cv2.WINDOW_NORMAL)
